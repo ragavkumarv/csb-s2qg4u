@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+
+<head>
+  <style>
+
+    h1 {
+      left: 600px;
+      position: absolute; 
+      padding: 60px;
+      font: 20px sans-serif; 
+      align-items: center;
+      justify-content: center;
+    }
+    
+    div.layout {
+      display: flex;
+      font-family: "Poppins", sans-serif;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      min-width: 90vw;
+    }
+
+    div.disc {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* #body {
+        position: absolute;
+        top: 60px;
+        left: 20px;
+    } */
+
+    #year input {
+      position: absolute;
+      top: 20px;
+      width: 200px;
+      left: 40;
+    }
+    #year output {
+      position: absolute;
+      top: 40px;
+      width: 300px;
+      white-space: pre-wrap;
+      left: -40;
+    }
+
+    #polyhedrontype {
+      position: absolute;
+      top: 50px;
+      left: 20px;
+    }
+
+    #chart {
+      transform: rotate(90deg);
+    }
+
+    .axis { 
+      font: 14px sans-serif; 
+    }
+    
+
+    /* .innerCont{
+        position: relative;
+    } */
+  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Norican&family=Open+Sans:wght@300;400;600&family=Poppins&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <h1>Number of Threatened species over the years</h1>
+    <div class="layout">
+      <div id="year">
+        <input type="range" min="2002" max="2021" value="1" />
+        <a></a>
+        <output name="Summary"></output>
+      </div>
+    <div class="disc">
+      <div id="body"></div>
+    </div>
+
+    <div id="chart" style="height: 600px; width: 600px">
+      <div
+        class="innerCont"
+        style="
+          top: 100px;
+          left: 400px;
+          height: 100%;
+          width: 100%;
+        "
+      ></div>
+    </div>
+  </div>
+
+  <script
+    src="https://code.jquery.com/jquery-1.12.4.min.js"
+    charset="utf-8"
+  ></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+
+  <script src="./data/threatenedSpecies.js"></script>
+  <script src="./data/balldata.js"></script>
+  <script src="./src/d3.geodesic.js"></script>
+  <script src="./src/bucky.js"></script>
+  <script src="./src/bar.js"></script>
+  <script src="./src/yearselect.js"></script>
+</body>
+
+

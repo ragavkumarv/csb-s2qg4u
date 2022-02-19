@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8" http-equiv="encoding">
+<head>
+<style>
+hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+} 
+
+#container {
+    position:fixed;
+    top: 120px;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    color: #555;
+}
+iframe {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border: "none";
+}
+[class^="toc"] {
+    font-family: "Poppins", sans-serif;
+    background-color:  #eee;
+    margin-top: 0px;
+    text-align: center;
+    display: absolute;
+    align-items: center;
+    justify-content: center;
+}
+a {
+    font-size: 2em;
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+    color: #555;
+    padding: 10px;
+}
+.effect1 a:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 100%;
+    background-color: #555;
+    transition: all 200ms ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.effect1 a:hover:before, .effect1 a:hover:after {
+    transform: translateY(0px);
+    opacity: 1
+}
+shsjhs:link {
+    border:3px solid #000000;
+    padding: 10px;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+.title {
+padding-bottom: 1px;
+font-size: 20px;
+}
+</style>
+</head>
+<body>
+<div class='toc'>
+<center>
+<p class="title">Select one of the following views</p>
+<a href="BuckyBall/geodesic.html" target="view_iframe">Geodesic Dome</a> -
+<a href="WeightedTree/WeightedTree.html" target="view_iframe">Dendrogram</a> -
+<a href="map/map/choroplethMap.html" target="view_iframe">Map</a>
+</center>
+<hr>
+</div>
+<div id="container">
+<iframe src="BuckyBall/geodesic.html" scrolling="no" width="100%" height="100%" frameBorder=0 name="view_iframe"></iframe>
+</div>
+</body>
+</html>
+<!-- Vignesh's old index.html
+
+<link rel="stylesheet" type="text/css" href="main.css">
+<body>
+
+<script src="https://d3js.org/d3.v3.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+</body>
+-->

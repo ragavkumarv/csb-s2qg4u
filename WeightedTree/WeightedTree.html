@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Weighted Tree</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto|Raleway:600,400,200' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="lib/styles/vizuly.css">
+
+    <script src="lib/d3_v5.7.min.js"></script>
+
+    <script src="lib/vizuly2_core.min.js"></script>
+    <script src="src/WeightedTree.js"></script>
+    
+	<script src="data/iucn.js"></script>
+
+</head>
+
+<body>
+<style>
+div #intro {
+font-size: 20px;
+padding: 5px;
+font-family: sans-serif;
+}
+</style>
+
+<!-- Our main content container-->
+<div class="container" style="width:100% ">
+
+    <div id="viz_container" class="z-depth-3" style="width:900px; height:900px;">
+	<div id="intro">
+		The dendrogram provides an overview of species that have yet to be assessed by the IUCN<br><br>
+		Hover over any species (Arachnids, Ferns, Mushrooms...) for more detail
+	</div>
+		<!--<div id=info style="position:fixed; right:10px; width:15%; height:100%;"></div> !-->
+<button style="appearance: button; background-color: #436edb;
+	margin: 2px;
+  border: 1px solid #022785;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: Graphik,-apple-system,system-ui,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell;
+  font-size: 14px;
+  line-height: 1.15;
+  overflow: visible;
+  padding: 12px 16px;
+  position: absolute;
+  z-index:1;
+  text-align: center;
+  text-transform: none;
+  transition: all 80ms ease-in-out;
+  touch-action: manipulation;
+  width: fit-content;"
+onclick="viz.update(true)">Expand all</button>
+	</div>
+</div>
+
+<script>
+var oceanStyles = {
+	'background-color-top': '#001F51',
+	//'background-color-top': '#838383',
+	'background-color-bottom': '#4d4d4',
+	//'background-color-bottom': '#039FDB',
+	'label-color': '#FFF',
+	'label-fill-opacity': 1,
+	'link-stroke': function (d, i) {
+		//return '#FFF'
+		//var colors = ["#FFA000", "#FF5722", "#F57C00", "#FF9800", "#FFEB3B"];
+		var colors = ["darkkhaki", "dodgerblue", "darkgreen", "orchid"];
+		//return '#FFF0000';
+		return colors[d.target.rootIndex % colors.length];
+	},
+	'link-stroke-opacity': .4,
+	'node-stroke':  '#FFF',
+	'node-stroke-opacity': 1,
+	'node-fill': function (d, i) {
+		//return '#FFF'
+		//var colors = ["#C50A0A", "#C2185B", "#F57C00", "#FF9800", "#FFEB3B"];
+		var colors = ["darkkhaki", "dodgerblue", "darkgreen", "orchid"];
+//		return '#FFF'; // solid color
+		console.log(d.data.key)
+		console.log(d.rootIndex % colors.length);
+		return colors[d.rootIndex % colors.length];
+	},
+	'node-fill-opacity': .7
+}
+
+
+// original .html
+	// Our visualization component.
+	var viz = vizuly2.viz.WeightedTree("#viz_container");
+	var display = "evaluated";
+	viz.data({key: 'Species', values: data})
+	 .width('100%')
+	 .height('100%')
+	 .children(function (d) { return d.values })
+	 .key(function (d) { return d.key || d.Category; })
+	 .value(function (d) {
+		 var ret = Number(d.TotalEvaluated || d.Total)
+		 /*if (isNaN(ret)) {
+		 	if (d.children) { 
+			 if (display == "evaluated") {
+			 	console.log("eval");
+			 	return d.children[1].Total; 
+			 } else {
+			 	console.log("estim");
+				return d.children[0].Total;
+			 }
+			 // use TotalEstimated from child
+		 	}
+		 } */
+		 
+		 //return Number(5000);
+		 return isNaN(ret) ? 0 : ret;
+	 })
+	 .valueFormatter(formatValue)
+	 .label(function (d) { 
+		var num = Number(d.TotalEvaluated || d.Total)
+		 if (isNaN(num)) {
+		 	if (d.children) { 
+			 if (display == "evaluated") {
+			 	console.log("eval");
+			 	var num = d.children[1].Total; 
+			 } else {
+			 	console.log("estim");
+				var num = d.children[0].Total;
+			 }
+			 // use TotalEstimated from child
+		 	}
+		 }
+		 if (d.key == "Species") {
+			return trimLabel(d.key || (d.Category));
+		 } else {
+	 	    return trimLabel(d.key || (d.Category)) + " (" + formatValue(num) + ")"
+		 }
+	})
+	 .dataTipLabel(function (d) { return d.key || d.Category })
+	 .useZoomToNode(true)
+	 .useZoom(true)
+	 .on("mouseover", onMouseOver)
+	 .on("mouseout", onMouseOut)
+	 .on("click", onClick)
+	
+	viz.update();
+	changeStyles('oceanStyles');
+
+// background image
+
+//	d3.select('rect.vz-background')
+//	.style('fill', 'darkgrey');
+/*
+	var svg = d3.select("svg.vizuly");
+	var defs = svg.select('defs');
+	defs.append('pattern')
+   .attr('id', 'pic1')
+   .attr('patternUnits', 'userSpaceOnUse')
+   .attr('width', 1024)
+   .attr('height', 768)
+   .append('image')
+   .attr('href', 'bg.jpg')
+   .attr("width", 1024)
+   .attr("height", 768)
+   .attr("x", 0)
+   .attr("y", 0);
+
+	d3.select('rect.vz-background')
+   .attr("d", "M 0,0, 57.7,-768, 1024,0z")
+   .attr("transform", "translate(1024, 768)")
+   .attr("fill", "url(#pic1)");
+*/
+	// info box
+	d3.select("div.vz-weighted_tree-viz")
+	.style('position', 'relative')
+	.append('div')
+	.attr('id', 'info')
+	.style('position', 'absolute')
+	.style('right', '0')
+	.style('top', '0')
+	.style('width', '20%')
+	.style('height', '100%');
+	//<!--<div id=info style="position:fixed; right:10px; width:15%; height:100%;"></div> !-->
+	// format sums
+	function formatValue (d) {
+		if (isNaN(d)) d = 0;
+		if (d < 1) {
+			var d = 0;
+		}
+		return d3.format("d")(d);
+	};
+
+	// trim node labels
+	function trimLabel(label) {
+		return (String(label).length > 20) ? String(label).substr(0, 17) + "..." : label;
+	}
+
+	function onMouseOver(e, d, i) {
+		console.log("onMouseOver " + display);
+		if (d.depth == 2) {
+			if (d._children) {
+				var iucn_eval = d._children[1].data.Total;
+				var tot = Number(d._children[0].data.Total) + Number(d._children[1].data.Total);
+				var perc = Number(d._children[0].data.Total) / tot;
+			} else {
+				// or _children if not expanded
+				var iucn_eval = d.children[1].data.Total;
+				var tot = Number(d.children[0].data.Total) + Number(d.children[1].data.Total);
+				var perc = Number(d.children[0].data.Total) / tot;
+			}
+			d3.select('div #info').append("h3").attr('class', 'infobox');
+			//d3.select('h3 #infobox').node()
+			d3.select('.infobox')
+			//: d3.select('div #info').append("h3").attr('id', 'infobox')
+    		.html('<b>Unknown status: ' + d3.format(",.1%")(perc) + '</b><br><br>' +
+			'Total Species: ' + tot + '<br><br>' +
+			'Evaluated Species: ' + iucn_eval
+			)
+			.style('font-size', function (d,i) { return viz.getStyle('label-font-size', arguments)  + 'px'})
+			.style('font-family', function (d,i) { return viz.getStyle('label-font-family', arguments) })
+			.style('font-weight', function (d,i) { return viz.getStyle('label-font-weight', arguments) })
+			.style('text-transform', function (d,i) { return viz.getStyle('label-text-transform', arguments) })
+			.style('fill', function (d,i) { return viz.getStyle('label-color', arguments) })
+			.style('fill-opacity', function (d,i) { return viz.getStyle('label-fill-opacity', arguments) })
+			.style('background', 'rgba(255,255,255, 0.9)')
+			.style('padding', '10px')
+			//.append("br")
+			//.text('Assessed: ' + d3.format(",.1%")(perc));
+			
+		}
+	}
+
+	function onMouseOut(e, d, i) {
+		console.log("onMouseOut " + d.data.Category)
+		d3.select('div #info').select('h3').remove();
+	}
+
+	//We can capture click events and respond to them
+	function onClick(g, d, i) {
+		console.log('onClick ' + d.data.Category)
+	}
+
+function changeStyles(val) {
+	var styles = this[val];
+	viz.clearStyles();
+	viz.applyStyles(styles);
+	viz.update();
+}
+</script>
+</body>
+</html>
